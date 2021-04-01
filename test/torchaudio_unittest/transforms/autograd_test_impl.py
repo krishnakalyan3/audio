@@ -60,3 +60,13 @@ class AutogradTestMixin(TestBaseMixin):
         transform = T.MelSpectrogram(sample_rate=sample_rate)
         waveform = get_whitenoise(sample_rate=sample_rate, duration=0.05, n_channels=2)
         self.assert_grad(transform, [waveform], nondet_tol=1e-10)
+
+    def test_griffinLim(self):
+        # replication_pad1d_backward_cuda is not deteministic and
+        # gives very small (~2.7756e-17) difference.
+        #
+        # See https://github.com/pytorch/pytorch/issues/54093
+        sample_rate = 8000
+        transform = T.GriffinLim(sample_rate=sample_rate)
+        waveform = get_whitenoise(sample_rate=sample_rate, duration=0.05, n_channels=2)
+        self.assert_grad(transform, [waveform], nondet_tol=1e-10)
